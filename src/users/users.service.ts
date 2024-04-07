@@ -1,10 +1,12 @@
-import { Body, Injectable } from '@nestjs/common';
+import { Body, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity'
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
+import { stat } from 'fs';
 @Injectable()
 export class UsersService {
   constructor(
@@ -16,12 +18,13 @@ export class UsersService {
 
     const existingEmail = await this.usersRepository.findOne({ where: { email: createUserDto.email } });
     if (existingEmail) {
-      return { message: "Email already exists" };
+      HttpStatus.CONFLICT;
+      return { status: "error", message: "Email already exists"};
     }
 
     const existingUsername = await this.usersRepository.findOne({ where: { username: createUserDto.username } });
     if (existingUsername) {
-      return { message: "Username already exists" };
+      return { status: "error", message: "Username already exists"};
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
@@ -30,7 +33,7 @@ export class UsersService {
     const user = this.usersRepository.create(createUserDto);
     await this.usersRepository.save(user);
 
-    return user;
+    return { status: "success", data: user };
   }
 
   async findAll() {
@@ -49,9 +52,8 @@ export class UsersService {
   }
 
   async findOneByUsername(username: string) {
-      console.log("start searching")
+    
       const existingUser = await this.usersRepository.findOne({ where: { username } });
-      console.log("existingUser", existingUser);
       if (!existingUser) {
         return { status: "error", message: "User not found"};
       }
@@ -60,18 +62,15 @@ export class UsersService {
     }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    console.log("start update");
-    console.log("updateUserDto", updateUserDto);
     const user = await this.usersRepository.findOne({ where: { id } });
     const password = await bcrypt.hash(updateUserDto.password, 10);
-    console.log("mid update");
-    console.log("user", user);
     if(!user) {
       return { message: "User not found" };
     }
 
     const matchedPassword = await bcrypt.compare(updateUserDto.password, user.password);
     if(!matchedPassword){      
+      
       return { message: "Password does not match" };
     }
     
@@ -80,16 +79,23 @@ export class UsersService {
     return { message: "User updated successfully" };
   }
 
-  async updateRefreshToken(updateUserDto: UpdateUserDto) {
+  async updateRefreshToken(updateUserDto: UpdateUserDto, res: Response) {
+
     const searchUser = await this.usersRepository.findOne({ where: { username: updateUserDto.username } });
     const user = searchUser;
     const userId = user.id;
-    console.log("userId : ", userId);
     return this.usersRepository.update(userId, updateUserDto);
+
+  }
+
+  async deleteRefreshToken(username: string) {
+    const searchUser = await this.usersRepository.findOne({ where: { username } });
+    const user = searchUser;
+    const userId = user.id;
+    return this.usersRepository.update(userId, { refreshToken: "" });
   }
 
   async remove(id: number) {
-
     const deleteResponse = await this.usersRepository.delete(id);
     if(deleteResponse.affected === 0) {
       return { message: "User not found" };
@@ -97,5 +103,6 @@ export class UsersService {
 
     return { message: "User deleted successfully" };
   }
+
   
 }
