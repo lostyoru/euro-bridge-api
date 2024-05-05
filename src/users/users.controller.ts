@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { Public } from 'src/auth/decorators/public.decorator';
-
+import { AddContactDto } from './dto/AddContactDto.dto';
+import { UserContact } from './entities/usercontact.entity';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -20,7 +20,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
@@ -34,5 +34,18 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
+  }
+
+  @Post('addcontact')
+  async addContact(@Body() addContactDto: AddContactDto): Promise<any> {
+    const { userId, contactId } = addContactDto;
+    const user = await this.usersService.addContact(userId, contactId);
+    return user; // You can return a success message or the updated user object
+  }
+
+  @Get(':id/contacts')
+  async getUserContacts(@Param('id') id: number): Promise<UserContact[]> {
+    const contacts = await this.usersService.getUserContacts(id);
+    return contacts;
   }
 }

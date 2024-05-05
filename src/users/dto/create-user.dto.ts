@@ -1,22 +1,10 @@
-import { IsEmail, IsIn, IsNumber, IsOptional, IsString, Matches } from "class-validator";
+import { IsEmail, IsIn, IsOptional, IsString, Matches } from "class-validator";
 import { Role } from "./role";
-
+// import { Message } from "src/chat/entities/message.entity";
+// import { UserContact } from "../entities/usercontact.entity";
 export class CreateUserDto {
     @IsString()
     name: string;
-  
-    @IsNumber()
-    @IsOptional()
-    age?: number; 
-  
-    @IsString()
-    @Matches(
-      /^(?=.{8,}$)[a-zA-Z_][a-zA-Z0-9_.-]{7,}$/,
-      {
-        message: "Username must be at least 8 characters long and can only contain letters, numbers, underscores, dots, and hyphens",
-      }
-    )
-    username: string;
   
     @IsEmail()
     email: string;
@@ -31,14 +19,30 @@ export class CreateUserDto {
     password: string;
   
     @IsString()
-    @IsIn([Role.USER, Role.ADMIN], {
-      message: "Role must be either 'user' or 'admin'",
+    @IsIn([Role.INTERSHIP_SEEKER, Role.COMPANY], {
+      message: "Role must be either 'intership seeker' or 'company'",
     })
     role: Role;
-  
-    isVerified: boolean = false; 
+
+    @IsOptional()
+    image: string;
+
+    @IsOptional()
+    coverImage: string;
 
     @IsOptional()
     refreshToken: string;
-  
+
+    // @IsOptional()
+    // work: string;
+
+    // @IsOptional()
+    // receivedMessages: Message[];
+
+    // @IsOptional()
+    // sentMessages: Message[]
+
+    // @IsOptional()
+    // userContact: UserContact[];
+
   }

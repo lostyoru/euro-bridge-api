@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+// import { MessagesModule } from './messages/messages.module';
+import { ChatModule } from './chat/chat.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ 
@@ -20,7 +22,7 @@ import { AuthModule } from './auth/auth.module';
     autoLoadEntities: true,
     synchronize: true,
   })
-  , UsersModule, AuthModule ],
+  , UsersModule, AuthModule, ChatModule],
   controllers: [AppController],
   providers: [AppService],
   exports: [ConfigModule]

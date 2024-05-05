@@ -29,4 +29,9 @@ export class AuthController {
     getProfile(@Req() req) {
         return req.user;
     }
+
+    @Get('refresh')
+    async handleRefreshToken(@Req() req: Request) {
+        return this.authService.handleRefreshToken(req);
+    }
 }
