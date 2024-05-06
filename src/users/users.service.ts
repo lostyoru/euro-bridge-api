@@ -6,6 +6,7 @@ import { User } from './entities/user.entity'
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserContact } from './entities/usercontact.entity';
+import { Message } from 'src/chat/entities/message.entity';
 
 @Injectable()
 export class UsersService {
@@ -102,37 +103,38 @@ export class UsersService {
   }
 
 
-
-  async addContact(userId: number, contactId: number): Promise<{ firstUser: User; secondUser: User; userContact: UserContact } | undefined> {
+  async addContact(userId: number, contactId: number): Promise<{ firstUser: any; secondUser: User; userContact: UserContact | undefined } | undefined> {
     try {
-      const user = await this.usersRepository.findOne({ where: { id: userId }, relations: ['contacts'] });
-      const contact = await this.usersRepository.findOne({ where: { id: contactId } });
+      const user = await this.usersRepository.findOne({ where: { id: userId }, relations: ['contacts', 'contacts.contact'] });
+      const contact = await this.usersRepository.findOne({ where: { id: contactId }, relations: ['contacts', 'contacts.contact'] });
   
       if (!user || !contact) {
-        return undefined; // Handle user or contact not found
+        return undefined; 
       }
-  
-      const existingUserContact = user.contacts.find(c => c.contact.id === contactId);
-  
+    
+      const userContactsArray = user.contacts.map(contact => ({...contact}));
+
+      const existingUserContact = userContactsArray.find(contact => contact.contact.id === contactId);
+      
+      const newContact = new UserContact();
       if (!existingUserContact) {
-        const newContact = new UserContact();
+        console.log('Creating new contact');
         newContact.user = user;
         newContact.contact = contact;
-        newContact.messages = []; // Initialize with empty messages array
+        newContact.messages = []; 
+        const newContact2 = new UserContact();
+        newContact2.contact = user;
+        newContact2.user = contact;
+        newContact2.messages = []; 
+
         await this.userContactRepository.save(newContact);
-  
-        user.contacts.push(newContact);
-        await this.usersRepository.save(user);
+        await this.userContactRepository.save(newContact2);
       }
-  
-      // const userDto = new CreateUserDto(); // ... populate userDto properties
-  
-      const userContactDto = new UserContact(); // ... populate userContactDto properties (if applicable)
   
       return {
         firstUser: user,
         secondUser: contact,
-        userContact: userContactDto,
+        userContact: newContact,
       };
     } catch (error) {
       console.error('Error adding contact:', error);
@@ -143,14 +145,25 @@ export class UsersService {
   async getUserContacts(userId: number): Promise<UserContact[]> {
     const user = await this.usersRepository.findOne({
       where: { id: userId },
-      relations: ['contacts' , 'contacts.userContact', 'userContact', 'contacts.userContact.messages', ],
+      relations: ['contacts', 'contacts.contact', 'contacts.messages', 'contacts.messages.sender', 'contacts.messages.receiver'],
     });
 
     if (user) {
-      return user.contacts; // Return the array of User objects representing contacts
+      return user.contacts;
     } else {
-      return []; // Return empty array if user not found
+      return []; 
     }
+  }
+
+  async getContactMessages(userId: number, contactId: number): Promise<Message[]>{
+    
+    const userContacts = await this.getUserContacts(userId);
+    const searchedContact = userContacts.find(contact => contact.contact.id == contactId)
+    if(!searchedContact){
+      return []
+    }
+
+    return searchedContact.messages
   }
 }
 

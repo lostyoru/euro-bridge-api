@@ -7,9 +7,10 @@ import { MessagesModule } from 'src/messages/messages.module';
 import { Message } from 'src/chat/entities/message.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { UserContact } from 'src/users/entities/usercontact.entity';
 
 @Module({
-    imports: [UsersModule, MessagesModule, TypeOrmModule.forFeature([Message, User])],
+    imports: [UsersModule, MessagesModule, TypeOrmModule.forFeature([Message, User, UserContact])],
     providers: [ChatGateway, ChatService],
 })
 

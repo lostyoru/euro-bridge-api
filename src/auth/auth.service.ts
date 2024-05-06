@@ -21,7 +21,6 @@ export class AuthService {
                 throw new HttpException(searchUser.message, HttpStatus.NOT_FOUND);
             }
             const user = searchUser.data;
-            console.log("user : ", user);
             const isPasswordMatch = await bcrypt.compare(signInDto.password, user.password);
             if (!isPasswordMatch) {
                 throw new UnauthorizedException({ message: 'Incorrect username or password'})

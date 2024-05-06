@@ -33,16 +33,4 @@ export class CreateUserDto {
     @IsOptional()
     refreshToken: string;
 
-    // @IsOptional()
-    // work: string;
-
-    // @IsOptional()
-    // receivedMessages: Message[];
-
-    // @IsOptional()
-    // sentMessages: Message[]
-
-    // @IsOptional()
-    // userContact: UserContact[];
-
   }

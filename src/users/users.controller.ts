@@ -48,4 +48,9 @@ export class UsersController {
     const contacts = await this.usersService.getUserContacts(id);
     return contacts;
   }
+
+  @Get(':userid/contacts/:contactid/messages')
+  async getContactMessages(@Param('id') userId: number, @Param('contactid') contactId: number){
+    return this.usersService.getContactMessages(userId, contactId)
+  }
 }

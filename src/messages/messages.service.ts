@@ -1,26 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Message } from '../chat/entities/message.entity';
+import { User } from '../users/entities/user.entity'
 
 @Injectable()
-export class MessagesService {
-  create(createMessageDto: CreateMessageDto) {
-    return 'This action adds a new message';
-  }
+export class MessageService {
+  constructor(
+    @InjectRepository(Message)
+    private readonly messageRepository: Repository<Message>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
-  findAll() {
-    return `This action returns all messages`;
-  }
+  async createMessage(senderId: number, receiverId: number, content: string): Promise<Message> {
+    const sender = await this.userRepository.findOne({
+      where: {
+        id: senderId
+      }
+    });
+    const receiver = await this.userRepository.findOne({
+      where: {
+        id: receiverId
+      }
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} message`;
-  }
+    if (!sender || !receiver) {
+      throw new Error('Sender or receiver not found');
+    }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return `This action updates a #${id} message`;
-  }
+    const message = new Message();
+    message.content = content;
+    message.createdAt = new Date();
+    message.sender = sender;
+    message.receiver = receiver;
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+    return await this.messageRepository.save(message);
   }
 }

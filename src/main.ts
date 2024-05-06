@@ -13,7 +13,7 @@ async function bootstrap() {
   app.enableCors({
     origin: 'http://localhost:3000', // Replace with allowed origin(s)
     credentials: true, // Set to true if sending cookies or authentication headers across origins
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Allowed request headers
+    allowedHeaders: ['Access-Control-Allow-Headers', 'Content-Type', 'Authorization', 'X-Requested-With'], // Allowed request headers
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'] // Allowed HTTP methods
   })
   app.use(cookieParser())

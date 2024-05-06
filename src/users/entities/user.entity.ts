@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 // import { Message } from "../../messages/entities/message.entity";
 // import { Exclude } from 'class-transformer';
 import  { Role } from "../dto/role";
@@ -44,11 +44,8 @@ export class User {
     // })
     // contacts: User[]; // Array of User objects representing contacts
 
-    @OneToMany(() => UserContact, userContact => userContact.user)
+    @OneToMany(() => UserContact , (userContact) => userContact.user, {eager: true})
     contacts: UserContact[];
-
-    @ManyToOne(() => UserContact, (userContact) => userContact.messages) // New relationship
-    userContact: UserContact;
 
     @OneToMany(() => Message, (message) => message.sender)
     sentMessages: Message[];
@@ -59,5 +56,5 @@ export class User {
     @Column({ default: ''})
     refreshToken: string;
 
-    
+
 }

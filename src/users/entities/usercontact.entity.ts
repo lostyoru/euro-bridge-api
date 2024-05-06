@@ -15,10 +15,10 @@ export class UserContact {
   @Column({ default: ''})
   lastMessageTime: string;
 
-  @ManyToOne(() => User, user => user.contacts)
+  @ManyToOne(() => User, (user) => user.contacts)
   user: User;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, user => user.contacts)
   contact: User;
 
   @OneToMany(() => Message, message => message.userContact, {eager: true})
