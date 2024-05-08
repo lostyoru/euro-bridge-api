@@ -43,7 +43,7 @@ export class User {
     //   inverseJoinColumn: { name: 'contactId', referencedColumnName: 'id' },
     // })
     // contacts: User[]; // Array of User objects representing contacts
-
+    
     @OneToMany(() => UserContact , (userContact) => userContact.user, {eager: true})
     contacts: UserContact[];
 

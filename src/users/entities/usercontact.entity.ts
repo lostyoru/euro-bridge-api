@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, OneToMany, Column, ManyToOne} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany} from 'typeorm';
 // import { User } from './user.entity';
 import { Message } from '../../chat/entities/message.entity';
 import { User } from './user.entity';
@@ -15,13 +15,13 @@ export class UserContact {
   @Column({ default: ''})
   lastMessageTime: string;
 
-  @ManyToOne(() => User, (user) => user.contacts)
+  @ManyToOne(() => User, user => user.contacts)
   user: User;
 
   @ManyToOne(() => User, user => user.contacts)
   contact: User;
 
-  @OneToMany(() => Message, message => message.userContact, {eager: true})
+  @ManyToMany(() => Message, message => message.userContact, {eager: true})
   messages: Message[];
 
 }

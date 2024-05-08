@@ -70,6 +70,7 @@ import { User } from 'src/users/entities/user.entity';
 import { sendMessageType } from 'types/sendMessageType';
 import { UserContact } from 'src/users/entities/usercontact.entity';
 
+
 const onlineUsers = new Map<string, string[]>(); // Stores emails and their connected socket IDs
 
 @Injectable()
@@ -90,21 +91,21 @@ export class ChatGateway {
 
   @SubscribeMessage('join')
   async handleJoin(client: Socket, email: string): Promise<void> {
-    // console.log(client);
+
     const user = await this.usersRepository.findOne({ 
       where: { email: email }
     });
-    // console.log(user)
+
     if (!user) {
-      // Handle case where user is not found (optional: send error event)
+
       return;
     }
   
     if (!onlineUsers.has(email)) {
       onlineUsers.set(email, []);
     }
-    onlineUsers.get(email).push(client.id); // Store socket IDs for the user
-    client.data.userId = user.id; // Store user ID on client socket for message creation
+    onlineUsers.get(email).push(client.id); 
+    client.data.userId = user.id; 
   }
 
   @SubscribeMessage('send-message')
@@ -116,13 +117,12 @@ export class ChatGateway {
     console.log(senderId);
     const recipient = await this.usersRepository.findOne({
       where: {
-        email: recipientEmail // 'email' should be the actual column name in the database
+        email: recipientEmail 
       }
     });
-    console.log(recipient);
 
     if (!recipient) {
-      // Handle case where recipient is not found (optional: send error event)
+
       return;
     }
 
@@ -134,42 +134,44 @@ export class ChatGateway {
       })
       const newMessage = new Message();
       newMessage.content= content;
-      newMessage.createdAt = new Date();
+      newMessage.createdAt = `${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
       newMessage.receiver = recipient;
       newMessage.sender = user;
-      await this.messageRepository.save(newMessage)
-      console.log(newMessage)
+      await this.messageRepository.save(newMessage);
+
       console.log(onlineUsers)
-      
-      const userContacts = await this.userContactRepository.find({
-        where: {
-          user: user,
-          contact: recipient 
-        } || {
-          user: recipient,
-          contact: user
-        }
-      })
-      console.log(userContacts)
-      userContacts.forEach(async (userContact) => {
+
+      const userContact = await this.usersService.getUserContact(user.id, recipient.id);
+      if(userContact){
+        userContact.lastMessage = content;
+        userContact.lastMessageTime = `${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
         userContact.messages.push(newMessage);
-        console.log(userContact)
         await this.userContactRepository.save(userContact);
-      })
-    
+      }
+      const recipientContact = await this.usersService.getUserContact(recipient.id, user.id);
+      console.log("recipient contact" , recipientContact);
+      if(recipientContact){
+        recipientContact.lastMessage = content;
+        recipientContact.lastMessageTime = `${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
+        recipientContact.messages.push(newMessage);
+        await this.userContactRepository.save(recipientContact);
+      }
+
+
+
       if (onlineUsers.has(recipientEmail)) {
         console.log("recipient is online")
         for (const socketId of onlineUsers.get(recipientEmail)) {
           console.log("broadcats")
-          client.to(socketId).emit('message', newMessage); // Broadcast to recipient's sockets
+          client.to(socketId).emit('message', newMessage); 
         }
       }
+
     } catch (error) {
       console.error('Error sending message:', error);
-      // Handle the error appropriately (e.g., display an error message to the user)
     }
   }
 
-  // ... other methods (unchanged)
+
 }
 

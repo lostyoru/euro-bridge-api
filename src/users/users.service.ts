@@ -165,5 +165,23 @@ export class UsersService {
 
     return searchedContact.messages
   }
+
+  async getUserContact(userId: number, contactId: number): Promise<UserContact | undefined> {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    const contact = await this.usersRepository.findOne({ where: { id: contactId } });
+
+    const userContact = await this.userContactRepository.findOne({
+      where: {
+        user,
+        contact,
+      },
+      relations: ['messages'],
+    });
+
+    if(userContact){
+      return userContact
+    }
+    return undefined;
+  }
 }
 

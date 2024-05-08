@@ -31,7 +31,7 @@ export class MessageService {
 
     const message = new Message();
     message.content = content;
-    message.createdAt = new Date();
+    message.createdAt = `${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`;
     message.sender = sender;
     message.receiver = receiver;
 
