@@ -1,7 +1,7 @@
 import { IsEmail, IsIn, IsOptional, IsString, Matches } from "class-validator";
 import { Role } from "./role";
-// import { Message } from "src/chat/entities/message.entity";
-// import { UserContact } from "../entities/usercontact.entity";
+
+
 export class CreateUserDto {
     @IsString()
     name: string;
@@ -22,7 +22,7 @@ export class CreateUserDto {
     @IsIn([Role.INTERSHIP_SEEKER, Role.COMPANY], {
       message: "Role must be either 'intership seeker' or 'company'",
     })
-    role: Role;
+    role: string;
 
     @IsOptional()
     image: string;
@@ -33,4 +33,13 @@ export class CreateUserDto {
     @IsOptional()
     refreshToken: string;
 
+    @IsOptional()
+    about: string;
+
+    @IsOptional()
+    phone: string;
+
+    @IsOptional()
+    work: string;
+    
   }

@@ -13,18 +13,18 @@ export class Message {
   @Column()
   createdAt: string;
 
-  @ManyToOne(() => User, (user) => user.sentMessages) // Sender
-  @JoinColumn({ name: "senderId" }) // Optional: customize join column name
+  @ManyToOne(() => User, (user) => user.sentMessages) 
+  @JoinColumn({ name: "senderId" }) 
   sender: User;
 
-  @ManyToOne(() => User, (user) => user.receivedMessages) // Receiver
-  @JoinColumn({ name: "receiverId" }) // Optional: customize join column name
+  @ManyToOne(() => User, (user) => user.receivedMessages) 
+  @JoinColumn({ name: "receiverId" }) 
   receiver: User;
 
   @ManyToMany(() => UserContact , userContact => userContact.messages)
   @JoinTable(
     {
-      name: 'messages_user_contact', // Join table name
+      name: 'messages_user_contact', 
       joinColumn: { name: 'messageId', referencedColumnName: 'id' },
       inverseJoinColumn: { name: 'UserContactId', referencedColumnName: 'id' },
     }

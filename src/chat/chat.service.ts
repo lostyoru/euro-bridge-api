@@ -25,9 +25,9 @@ export class ChatService {
       message.receiver = receiver;
       return await this.messageRepository.save(message);
     } else {
-      return undefined; // Handle case where sender or receiver not found
+      return undefined; 
     }
   }
 
-  // ... other methods (unchanged)
+
 }

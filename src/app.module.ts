@@ -7,6 +7,9 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 // import { MessagesModule } from './messages/messages.module';
 import { ChatModule } from './chat/chat.module';
+import { IntershipModule } from './intership/intership.module';
+import { CompanyModule } from './company/company.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ 
@@ -22,7 +25,7 @@ import { ChatModule } from './chat/chat.module';
     autoLoadEntities: true,
     synchronize: true,
   })
-  , UsersModule, AuthModule, ChatModule],
+  , UsersModule, AuthModule, ChatModule, IntershipModule, CompanyModule, CloudinaryModule],
   controllers: [AppController],
   providers: [AppService],
   exports: [ConfigModule]

@@ -1,5 +1,5 @@
 export enum Role {
-    INTERSHIP_SEEKER = 'user',
+    INTERSHIP_SEEKER = 'intership_seeker',
     COMPANY = 'company',
     ADMIN = 'admin',
 }

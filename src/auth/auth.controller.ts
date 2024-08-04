@@ -21,6 +21,7 @@ export class AuthController {
 
     @Get('signout')
     async signOut(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+        console.log("inside signout");
         return this.authService.signOut(req, res);
     }
 
