@@ -15,8 +15,8 @@ export class AuthController {
     }
 
     @Post('signup')
-    async signUp(@Body() createUserDto: CreateUserDto, @Res({ passthrough: true }) res: Response){
-        return this.authService.signUp(createUserDto, res);
+    async signUp(@Body() createUserDto: CreateUserDto){
+        return this.authService.signUp(createUserDto);
     }
 
     @Get('signout')
