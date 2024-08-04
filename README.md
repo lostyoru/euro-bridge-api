@@ -60,13 +60,6 @@ The application uses MySQL as its primary database, managed through TypeORM. Red
 Support
 NestJS is an MIT-licensed open source project. It thrives thanks to the support of its sponsors and backers. To support the project, please visit this page.
 
-Stay in Touch
-Author - Kamil Myśliwiec
-Website - https://nestjs.com
-Twitter - @nestframework
-License
-This project is UNLICENSED.
-
 Remarks
 Please note that UseGuards were temporarily removed to simplify testing. They may be reintroduced in future updates to enhance security and access control.
 
